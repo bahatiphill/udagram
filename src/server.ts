@@ -1,5 +1,6 @@
 import express from 'express';
 import bodyParser from 'body-parser';
+import { PathLike } from 'fs';
 import {filterImageFromURL, deleteLocalFiles} from './util/util';
 
 (async () => {
@@ -30,6 +31,32 @@ import {filterImageFromURL, deleteLocalFiles} from './util/util';
   /**************************************************************************** */
 
   //! END @TODO1
+
+
+  app.get('/filteredimage', async (req: Request, res: Response) => {
+    
+    const { image_url } = req.query;
+    if (!image_url) {
+      return res.status(400).send("image URL required");
+    }
+    try {
+      const filteredpath: PathLike = await filterImageFromURL(image_url);
+
+      res.status(200).sendFile(filteredpath, async (err: Errback) => {
+        if (err) {
+          console.log("something happen, bro");
+        } else {
+          await deleteLocalFiles([filteredpath]);
+        }
+      });
+    }
+    catch (e) {
+      res.status(500).send(e.message);
+    }
+  });
+
+
+
   
   // Root Endpoint
   // Displays a simple message to the user
@@ -39,7 +66,7 @@ import {filterImageFromURL, deleteLocalFiles} from './util/util';
   
 
   // Start the Server
-  app.listen( port, () => {
+  app.listen( port, '192.168.33.10', () => {
       console.log( `server running http://localhost:${ port }` );
       console.log( `press CTRL+C to stop server` );
   } );
