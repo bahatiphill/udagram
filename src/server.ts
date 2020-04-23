@@ -33,7 +33,7 @@ import {filterImageFromURL, deleteLocalFiles} from './util/util';
   //! END @TODO1
 
 
-  app.get('/filteredimage', async (req: Request, res: Response) => {
+  app.get('/filteredimage', async (req, res) => {
     
     const { image_url } = req.query;
     if (!image_url) {
@@ -42,8 +42,8 @@ import {filterImageFromURL, deleteLocalFiles} from './util/util';
     try {
       const filteredpath: PathLike = await filterImageFromURL(image_url);
 
-      res.status(200).sendFile(filteredpath, async (err: Errback) => {
-        if (err) {
+      res.status(200).sendFile(filteredpath, async (er) => {
+        if (er) {
           console.log("something happen, bro");
         } else {
           await deleteLocalFiles([filteredpath]);
@@ -66,7 +66,7 @@ import {filterImageFromURL, deleteLocalFiles} from './util/util';
   
 
   // Start the Server
-  app.listen( port, '192.168.33.10', () => {
+  app.listen( port,  () => {
       console.log( `server running http://localhost:${ port }` );
       console.log( `press CTRL+C to stop server` );
   } );
